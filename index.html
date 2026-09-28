@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="midnight-indigo">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="description" content="Triki Studio Pro • Plataforma integral de Tres en Raya con análisis en vivo, registro táctico, IA Minimax, retroceso de jugadas y accesibilidad estricta WCAG AAA.">
+  <meta name="theme-color" content="#09090b">
+  <title>Triki Studio • Precision Master Edition</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Toast de Notificaciones Accesible -->
+  <div id="toastNotification" class="toast-popup hidden" role="status" aria-live="polite"></div>
+
+  <!-- Canvas para Confeti y Efectos de Partículas -->
+  <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+  <!-- Fondo Ambiental y Cuadrícula Sutil -->
+  <div class="bg-noise" aria-hidden="true"></div>
+  <div class="ambient-glow glow-top" aria-hidden="true"></div>
+  <div class="ambient-glow glow-bottom" aria-hidden="true"></div>
+
+  <!-- Contenedor Maestro: Dashboard de 2 Columnas -->
+  <div class="dashboard-wrapper">
+    
+    <!-- BARRA SUPERIOR GLOBAL -->
+    <header class="studio-navbar" role="banner">
+      <div class="brand-group">
+        <div class="brand-badge-icon" aria-hidden="true">
+          <svg class="brand-svg-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <svg class="brand-svg-o" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><circle cx="12" cy="12" r="7"></circle></svg>
+        </div>
+        <div class="brand-info">
+          <div class="brand-headline">
+            <h1 class="brand-name">Triki</h1>
+            <span class="brand-tag">Studio Pro</span>
+          </div>
+          <span class="brand-desc">Neural Engine & Analytics</span>
+        </div>
+      </div>
+
+      <nav class="studio-nav-tools" aria-label="Herramientas del sistema">
+        <!-- Selector de Paletas Calibradas -->
+        <div class="dropdown-wrapper">
+          <button id="themeToggleBtn" class="tool-btn" type="button" title="Cambiar Tema (Atajo: T)" aria-label="Seleccionar tema visual (actual: Midnight Indigo)" aria-haspopup="menu" aria-expanded="false" aria-controls="themeMenu">
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+            </svg>
+            <span class="theme-active-dot" aria-hidden="true"></span>
+          </button>
+          
+          <div id="themeMenu" class="dropdown-panel hidden" role="menu" aria-label="Paletas de diseño">
+            <div class="dropdown-header">Paletas Calibradas</div>
+            <button class="theme-option active" type="button" role="menuitemradio" aria-checked="true" data-theme-val="midnight-indigo" tabindex="0">
+              <span class="theme-preview indigo-preview" aria-hidden="true"></span>
+              <div class="theme-meta">
+                <span class="theme-name">Midnight Indigo</span>
+                <span class="theme-sub">Zinc 950 • Indigo / Rose</span>
+              </div>
+              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </button>
+            <button class="theme-option" type="button" role="menuitemradio" aria-checked="false" data-theme-val="slate-emerald" tabindex="-1">
+              <span class="theme-preview emerald-preview" aria-hidden="true"></span>
+              <div class="theme-meta">
+                <span class="theme-name">Slate Emerald</span>
+                <span class="theme-sub">Slate 900 • Emerald / Amber</span>
+              </div>
+              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </button>
+            <button class="theme-option" type="button" role="menuitemradio" aria-checked="false" data-theme-val="nordic-light" tabindex="-1">
+              <span class="theme-preview nordic-preview" aria-hidden="true"></span>
+              <div class="theme-meta">
+                <span class="theme-name">Nordic Minimal</span>
+                <span class="theme-sub">Frost White • Cobalt / Crimson</span>
+              </div>
+              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Botón de Audio -->
+        <button id="soundToggleBtn" class="tool-btn" type="button" title="Alternar Sonido (Atajo: M)" aria-label="Efectos de sonido activados. Presiona para silenciar.">
+          <svg id="soundIconOn" class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <svg id="soundIconOff" class="icon-svg hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+
+        <!-- Botón de Compartir Resumen -->
+        <button id="shareSummaryBtn" class="tool-btn" type="button" title="Copiar resumen al portapapeles" aria-label="Copiar resumen del marcador al portapapeles">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+        </button>
+
+        <!-- Botón de Historial -->
+        <button id="historyModalBtn" class="tool-btn" type="button" title="Historial Completo (Atajo: H)" aria-label="Abrir historial de partidas" aria-haspopup="dialog">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </button>
+      </nav>
+    </header>
+
+    <!-- CUERPO PRINCIPAL DEL DASHBOARD (2 COLUMNAS) -->
+    <div class="studio-layout">
+      
+      <!-- COLUMNA IZQUIERDA: ÁREA DE JUEGO PRINCIPAL -->
+      <section class="game-arena-column" aria-label="Tablero y controles de la partida">
+        
+        <!-- Configuración de Partida Rápida -->
+        <div class="control-panel" aria-label="Ajustes de la partida">
+          <div class="segmented-pill" role="radiogroup" aria-label="Modo de juego">
+            <button class="seg-item active" id="modePvpBtn" type="button" role="radio" aria-checked="true" data-mode="pvp">
+              <svg class="seg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <span>2 Jugadores</span>
+            </button>
+            <button class="seg-item" id="modeAiBtn" type="button" role="radio" aria-checked="false" data-mode="ai">
+              <svg class="seg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>
+              <span>Vs Bot IA</span>
+            </button>
+          </div>
+
+          <div class="control-options">
+            <div class="select-pill hidden" id="difficultyGroup">
+              <label for="diffSelect" class="pill-label">Nivel:</label>
+              <select id="diffSelect" class="pill-select" aria-label="Nivel de dificultad del Bot IA">
+                <option value="easy">Casual</option>
+                <option value="medium">Táctico</option>
+                <option value="unbeatable" selected>Imbatible (Minimax)</option>
+              </select>
+            </div>
+
+            <div class="select-pill" id="starterGroup">
+              <label for="starterSelect" class="pill-label">Inicia:</label>
+              <select id="starterSelect" class="pill-select" aria-label="Qué ficha comienza la partida">
+                <option value="X" selected>Ficha X</option>
+                <option value="O">Ficha O</option>
+                <option value="alternate">Alternado</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Marcador HUD con Nombres Editables -->
+        <div class="score-hud" aria-label="Marcador y puntuaciones en vivo">
+          <!-- Jugador X -->
+          <div class="player-slot active-turn" id="cardPlayerX" aria-label="Puntuación Jugador 1 X: 0 victorias">
+            <div class="slot-header">
+              <span class="slot-avatar avatar-x" aria-hidden="true">✕</span>
+              <div class="slot-meta">
+                <div class="slot-name-wrapper">
+                  <span class="slot-name" id="namePlayerX" title="Clic para renombrar jugador">Jugador 1</span>
+                  <button id="editNameXBtn" class="edit-name-btn" type="button" aria-label="Editar nombre del Jugador 1">✎</button>
+                </div>
+                <span class="slot-sub">Ficha X</span>
+              </div>
+            </div>
+            <div class="slot-score" id="scoreX" aria-live="polite">0</div>
+            <div class="active-indicator-border" aria-hidden="true"></div>
+          </div>
+
+          <!-- Empates y Rachas -->
+          <div class="stats-slot" aria-label="Empates acumulados y racha actual">
+            <div class="stat-group">
+              <span class="stat-title">Empates</span>
+              <span class="stat-value" id="scoreTies" aria-live="polite">0</span>
+            </div>
+            <div class="streak-pill" id="streakBadge" title="Racha de victorias consecutivas">
+              <span class="streak-label">Racha</span>
+              <span id="streakCount" class="streak-num">0</span>
+            </div>
+          </div>
+
+          <!-- Jugador O / Bot -->
+          <div class="player-slot" id="cardPlayerO" aria-label="Puntuación Jugador 2 O: 0 victorias">
+            <div class="slot-header">
+              <span class="slot-avatar avatar-o" aria-hidden="true">◯</span>
+              <div class="slot-meta">
+                <div class="slot-name-wrapper">
+                  <span class="slot-name" id="namePlayerO" title="Clic para renombrar jugador">Jugador 2</span>
+                  <button id="editNameOBtn" class="edit-name-btn" type="button" aria-label="Editar nombre del Jugador 2">✎</button>
+                </div>
+                <span class="slot-sub" id="rolePlayerO">Ficha O</span>
+              </div>
+            </div>
+            <div class="slot-score" id="scoreO" aria-live="polite">0</div>
+            <div class="active-indicator-border" aria-hidden="true"></div>
+          </div>
+        </div>
+
+        <!-- Banner de Estado -->
+        <div class="turn-status-bar" id="gameStatusBanner" role="status" aria-live="polite" aria-atomic="true">
+          <div class="status-indicator-dot" aria-hidden="true"></div>
+          <span id="statusText" class="status-msg">Turno de <strong>Jugador X</strong></span>
+        </div>
+
+        <!-- Tablero de 3x3 -->
+        <div class="board-container" aria-label="Tablero de juego">
+          <div class="board-frame">
+            <svg id="winLineSvg" class="win-line-canvas" aria-hidden="true">
+              <line id="winLine" x1="0" y1="0" x2="0" y2="0" stroke-linecap="round" />
+            </svg>
+
+            <div class="grid-3x3" id="boardGrid" role="grid" aria-label="Cuadrícula interactiva de 9 casillas">
+              <button class="grid-cell" data-index="0" role="gridcell" tabindex="0" aria-label="Casilla 1 (Atajo: 7)"><span class="coord-badge" aria-hidden="true">A1</span></button>
+              <button class="grid-cell" data-index="1" role="gridcell" tabindex="0" aria-label="Casilla 2 (Atajo: 8)"><span class="coord-badge" aria-hidden="true">A2</span></button>
+              <button class="grid-cell" data-index="2" role="gridcell" tabindex="0" aria-label="Casilla 3 (Atajo: 9)"><span class="coord-badge" aria-hidden="true">A3</span></button>
+              <button class="grid-cell" data-index="3" role="gridcell" tabindex="0" aria-label="Casilla 4 (Atajo: 4)"><span class="coord-badge" aria-hidden="true">B1</span></button>
+              <button class="grid-cell" data-index="4" role="gridcell" tabindex="0" aria-label="Casilla 5 (Atajo: 5)"><span class="coord-badge" aria-hidden="true">B2</span></button>
+              <button class="grid-cell" data-index="5" role="gridcell" tabindex="0" aria-label="Casilla 6 (Atajo: 6)"><span class="coord-badge" aria-hidden="true">B3</span></button>
+              <button class="grid-cell" data-index="6" role="gridcell" tabindex="0" aria-label="Casilla 7 (Atajo: 1)"><span class="coord-badge" aria-hidden="true">C1</span></button>
+              <button class="grid-cell" data-index="7" role="gridcell" tabindex="0" aria-label="Casilla 8 (Atajo: 2)"><span class="coord-badge" aria-hidden="true">C2</span></button>
+              <button class="grid-cell" data-index="8" role="gridcell" tabindex="0" aria-label="Casilla 9 (Atajo: 3)"><span class="coord-badge" aria-hidden="true">C3</span></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botonera de Acción Ampliada con Deshacer Jugada -->
+        <div class="action-footer">
+          <button id="restartBtn" class="btn-cta btn-primary" type="button" title="Reiniciar tablero (Atajo: R)">
+            <svg class="btn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+            <span>Nueva Ronda</span>
+            <kbd class="kbd-hint">R</kbd>
+          </button>
+
+          <button id="undoBtn" class="btn-cta btn-ghost" type="button" title="Deshacer última jugada (Atajo: Z)" disabled aria-label="Deshacer última jugada">
+            <svg class="btn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 7v6h6"></path>
+              <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
+            </svg>
+            <span>Deshacer</span>
+            <kbd class="kbd-hint">Z</kbd>
+          </button>
+
+          <button id="resetScoresBtn" class="btn-cta btn-ghost" type="button" title="Reiniciar estadísticas" aria-label="Reiniciar todas las puntuaciones acumuladas">
+            <svg class="btn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            <span>Puntos</span>
+          </button>
+        </div>
+
+      </section>
+
+      <!-- COLUMNA DERECHA: SIDEBAR DE ANÁLISIS & REGISTRO TÁCTICO -->
+      <aside class="studio-sidebar-column" aria-label="Panel de análisis y registro táctico">
+        
+        <!-- 1. Distribución de Victorias (Win Distribution Bar) -->
+        <div class="side-card">
+          <div class="side-card-header">
+            <div class="side-card-title">
+              <svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"></path></svg>
+              <span>Balance de Rendimiento</span>
+            </div>
+            <span class="total-rounds-badge" id="totalRoundsBadge">0 rondas</span>
+          </div>
+
+          <!-- Barra de Proporción Visual -->
+          <div class="win-rate-bar" aria-hidden="true">
+            <div class="bar-seg bar-x" id="barX" style="width: 33.33%;"></div>
+            <div class="bar-seg bar-tie" id="barTie" style="width: 33.33%;"></div>
+            <div class="bar-seg bar-o" id="barO" style="width: 33.34%;"></div>
+          </div>
+
+          <!-- Métricas de Porcentaje -->
+          <div class="rate-legend">
+            <div class="legend-item">
+              <span class="legend-dot dot-x"></span>
+              <span class="legend-name" id="legendLabelX">Gana X:</span>
+              <strong id="pctX" class="legend-val">0%</strong>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot dot-tie"></span>
+              <span class="legend-name">Empates:</span>
+              <strong id="pctTie" class="legend-val">0%</strong>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot dot-o"></span>
+              <span class="legend-name" id="legendLabelO">Gana O:</span>
+              <strong id="pctO" class="legend-val">0%</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Registro de Jugadas en Vivo (Move Notation Log) -->
+        <div class="side-card live-log-card">
+          <div class="side-card-header">
+            <div class="side-card-title">
+              <svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+              <span>Registro Táctico en Vivo</span>
+            </div>
+            <span class="live-pulse-badge">En directo</span>
+          </div>
+
+          <div class="move-log-container" id="moveLogContainer">
+            <div class="log-empty-state" id="logEmptyState">
+              <span>Comienza la partida para ver los movimientos turno a turno.</span>
+            </div>
+            <div class="move-timeline hidden" id="moveTimeline">
+              <!-- Se llena dinámicamente con JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Atajos de Teclado Rápidos -->
+        <div class="side-card shortcuts-card">
+          <div class="side-card-header">
+            <div class="side-card-title">
+              <svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M8 12h.001M12 12h.001M16 12h.001M7 16h10"></path></svg>
+              <span>Atajos de Teclado</span>
+            </div>
+          </div>
+
+          <div class="shortcuts-grid">
+            <div class="shortcut-pill">
+              <span class="shortcut-desc">Teclado numérico</span>
+              <div class="kbd-combo"><kbd>1</kbd> - <kbd>9</kbd></div>
+            </div>
+            <div class="shortcut-pill">
+              <span class="shortcut-desc">Nueva ronda</span>
+              <kbd>R</kbd>
+            </div>
+            <div class="shortcut-pill">
+              <span class="shortcut-desc">Deshacer jugada</span>
+              <kbd>Z</kbd>
+            </div>
+            <div class="shortcut-pill">
+              <span class="shortcut-desc">Silenciar / Audio</span>
+              <kbd>M</kbd>
+            </div>
+            <div class="shortcut-pill">
+              <span class="shortcut-desc">Cambiar tema</span>
+              <kbd>T</kbd>
+            </div>
+            <div class="shortcut-pill">
+              <span class="shortcut-desc">Historial</span>
+              <kbd>H</kbd>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+
+  </div>
+
+  <!-- MODAL DE HISTORIAL COMPLETO -->
+  <div id="historyModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div class="modal-head-title">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <h2 id="modalTitle">Registro de Partidas Anteriores</h2>
+        </div>
+        <button id="closeHistoryBtn" class="modal-close-btn" type="button" aria-label="Cerrar modal de historial">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="modal-content-area">
+        <div id="historyList" class="history-feed" role="list">
+          <!-- Contenido dinámico -->
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="clearHistoryBtn" class="btn-cta btn-danger" type="button">Borrar Historial</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
